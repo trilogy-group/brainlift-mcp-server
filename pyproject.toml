@@ -1,0 +1,24 @@
+[project]
+name = "brainlift-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastmcp>=0.1.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "google-auth>=2.25.0",
+    "google-auth-oauthlib>=1.2.0",
+    "google-auth-httplib2>=0.2.0",
+]
+
+[project.scripts]
+main = "src.main:main"
+oauth = "src.oauth_client:cli"
+
+[tool.uv]
+package = true
+
+[tool.setuptools]
+packages = ["src"]
