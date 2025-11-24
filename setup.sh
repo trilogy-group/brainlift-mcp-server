@@ -52,7 +52,7 @@ echo "Setup complete" >&2
 cat << EOF
 {
   "command": "uv",
-  "args": ["run", "slides-mcp"],
+  "args": ["run", "main"],
   "env": {
     "OAUTH_CLIENT_SECRET": "./credentials/client-secrets.json",
     "OAUTH_CLIENT_TOKEN": "./.gcp-saved-token.json"

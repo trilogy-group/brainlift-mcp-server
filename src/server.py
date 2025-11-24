@@ -1,24 +1,18 @@
 import os
-import sys
-from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Add the current directory to the path for imports
-current_dir = Path(__file__).parent
-sys.path.insert(0, str(current_dir))
-
-from brainlift_client import BrainliftClient
-from oauth_client import OAuthClient
+from src.brainlift_client import BrainliftClient
+from src.oauth_client import OAuthClient
 
 # Initialize FastMCP server
 mcp = FastMCP("brainlift-mcp")
 
 # Initialize BrainliftClient with OAuth authentication
-API_URL = os.environ.get("BRAINLIFT_API_URL", "https://api.brainlift.com")
+API_URL = os.environ.get("BRAINLIFT_API_URL", "https://brainlift.space")
 oauth_client = OAuthClient()
 client = BrainliftClient(api_url=API_URL, oauth_client=oauth_client)
 
