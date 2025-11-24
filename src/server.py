@@ -28,7 +28,10 @@ def get_brainlifts() -> list[dict]:
         A list of BrainLifts with id, title, and qualityScore
         [{ id, title, qualityScore }]
     """
-    return client.get_brainlifts()
+    try:
+        return client.get_brainlifts()
+    except Exception as e:
+        raise Exception(f"Failed to get BrainLifts: {str(e)}")
 
 
 @mcp.tool()
@@ -55,16 +58,22 @@ def get_brainlift_info(brainlift_id: str) -> dict:
             "brainlift_contents": string
         }
     """
-    brainlift_data = client.get_brainlift(brainlift_id)
-    nodes = client.get_nodes(brainlift_id)
-    
-    # Format the response according to the specification
-    return {
-        "brainlift_title": brainlift_data.get("title", ""),
-        "dok_distribution": brainlift_data.get("dokDistribution", {}),
-        "stats": brainlift_data.get("stats", {}),
-        "brainlift_contents": "\n".join([node.get("content", "") for node in nodes])
-    }
+    try:
+        if not brainlift_id:
+            raise Exception("brainlift_id parameter is required")
+        
+        brainlift_data = client.get_brainlift(brainlift_id)
+        nodes = client.get_nodes(brainlift_id)
+        
+        # Format the response according to the specification
+        return {
+            "brainlift_title": brainlift_data.get("title", ""),
+            "dok_distribution": brainlift_data.get("dokDistribution", {}),
+            "stats": brainlift_data.get("stats", {}),
+            "brainlift_contents": "\n".join([node.get("content", "") for node in nodes])
+        }
+    except Exception as e:
+        raise Exception(f"Failed to get BrainLift info: {str(e)}")
 
 
 @mcp.tool()
@@ -88,22 +97,36 @@ def get_brainlift_doks(brainlift_id: str, dok_levels: list[int]) -> dict:
             "dok4": [string]
         }
     """
-    brainlift_data = client.get_brainlift(brainlift_id)
-    nodes = client.get_nodes(brainlift_id)
-    
-    # Filter nodes by DOK levels
-    result = {
-        "brainlift_title": brainlift_data.get("title", "")
-    }
-    
-    for level in dok_levels:
-        dok_key = f"dok{level}"
-        filtered_nodes = [
-            node.get("content", "") 
-            for node in nodes 
-            if node.get("dokLevel") == level
-        ]
-        result[dok_key] = filtered_nodes
-    
-    return result
+    try:
+        if not brainlift_id:
+            raise Exception("brainlift_id parameter is required")
+        
+        if not dok_levels:
+            raise Exception("dok_levels parameter is required")
+        
+        # Validate DOK levels
+        invalid_levels = [level for level in dok_levels if level not in [1, 2, 3, 4]]
+        if invalid_levels:
+            raise Exception(f"Invalid DOK levels: {invalid_levels}. Must be 1, 2, 3, or 4")
+        
+        brainlift_data = client.get_brainlift(brainlift_id)
+        nodes = client.get_nodes(brainlift_id)
+        
+        # Filter nodes by DOK levels
+        result = {
+            "brainlift_title": brainlift_data.get("title", "")
+        }
+        
+        for level in dok_levels:
+            dok_key = f"dok{level}"
+            filtered_nodes = [
+                node.get("content", "") 
+                for node in nodes 
+                if node.get("dokLevel") == level
+            ]
+            result[dok_key] = filtered_nodes
+        
+        return result
+    except Exception as e:
+        raise Exception(f"Failed to get BrainLift DOK nodes: {str(e)}")
 

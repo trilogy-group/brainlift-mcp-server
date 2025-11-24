@@ -56,9 +56,21 @@ class BrainliftClient:
                 }
             ]
         
-        headers = self._get_headers()
-        response = requests.get(f"{self.base_url}/brainlifts", headers=headers)
-        return response.json()
+        try:
+            headers = self._get_headers()
+            response = requests.get(f"{self.base_url}/brainlifts", headers=headers, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            raise Exception(f"HTTP error fetching BrainLifts: {e}")
+        except requests.exceptions.ConnectionError as e:
+            raise Exception(f"Failed to connect to BrainLift API at {self.base_url}: {e}")
+        except requests.exceptions.Timeout:
+            raise Exception(f"Request timed out after 30 seconds")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Error fetching BrainLifts: {e}")
+        except Exception as e:
+            raise Exception(f"Unexpected error: {e}")
 
     def get_brainlift(self, brainlift_id: str):
         """
@@ -78,9 +90,23 @@ class BrainliftClient:
                 }
             }
         
-        headers = self._get_headers()
-        response = requests.get(f"{self.base_url}/brainlifts/{brainlift_id}", headers=headers)
-        return response.json()
+        try:
+            headers = self._get_headers()
+            response = requests.get(f"{self.base_url}/brainlifts/{brainlift_id}", headers=headers, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                raise Exception(f"BrainLift with ID '{brainlift_id}' not found")
+            raise Exception(f"HTTP error fetching BrainLift '{brainlift_id}': {e}")
+        except requests.exceptions.ConnectionError as e:
+            raise Exception(f"Failed to connect to BrainLift API at {self.base_url}: {e}")
+        except requests.exceptions.Timeout:
+            raise Exception(f"Request timed out after 30 seconds")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Error fetching BrainLift '{brainlift_id}': {e}")
+        except Exception as e:
+            raise Exception(f"Unexpected error: {e}")
 
     def get_nodes(self, brainlift_id: str):
         """
@@ -105,6 +131,20 @@ class BrainliftClient:
                 }
             ]
         
-        headers = self._get_headers()
-        response = requests.get(f"{self.base_url}/brainlifts/{brainlift_id}/nodes", headers=headers)
-        return response.json()
+        try:
+            headers = self._get_headers()
+            response = requests.get(f"{self.base_url}/brainlifts/{brainlift_id}/nodes", headers=headers, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                raise Exception(f"BrainLift with ID '{brainlift_id}' not found")
+            raise Exception(f"HTTP error fetching nodes for BrainLift '{brainlift_id}': {e}")
+        except requests.exceptions.ConnectionError as e:
+            raise Exception(f"Failed to connect to BrainLift API at {self.base_url}: {e}")
+        except requests.exceptions.Timeout:
+            raise Exception(f"Request timed out after 30 seconds")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Error fetching nodes for BrainLift '{brainlift_id}': {e}")
+        except Exception as e:
+            raise Exception(f"Unexpected error: {e}")
