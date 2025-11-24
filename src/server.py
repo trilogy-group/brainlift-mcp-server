@@ -12,7 +12,10 @@ from src.oauth_client import OAuthClient
 mcp = FastMCP("brainlift-mcp")
 
 # Initialize BrainliftClient with OAuth authentication
-API_URL = os.environ.get("BRAINLIFT_API_URL", "https://brainlift.space")
+API_URL = os.environ.get("BRAINLIFT_API_URL", "API_URL not set")
+if API_URL == "API_URL not set":
+    raise Exception("BRAINLIFT_API_URL environment variable is not set")
+
 oauth_client = OAuthClient()
 client = BrainliftClient(api_url=API_URL, oauth_client=oauth_client)
 

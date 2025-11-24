@@ -53,6 +53,9 @@ jobs:
             "version": "${{ steps.get_version.outputs.version }}",
             "tags": ["brainlift", "knowledge-management", "learning", "education"],
             "homePage": "${REPO_URL}",
+            "env": {
+              "BRAINLIFT_API_URL": "${{ secrets.BRAINLIFT_API_URL }}"
+            },
             "securitySchemes": [
               {
                 "id": "oauth2",
