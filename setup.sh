@@ -56,6 +56,7 @@ cat << EOF
   "env": {
     "OAUTH_CLIENT_SECRET": "./credentials/client-secrets.json",
     "OAUTH_CLIENT_TOKEN": "./.gcp-saved-token.json"
+    "BRAINLIFT_API_URL": "https://okmztotkjfpmqstgkqsh.supabase.co/rest/v1"
   },
   "cwd": "$(pwd)"
 }
