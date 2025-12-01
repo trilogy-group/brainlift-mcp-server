@@ -52,10 +52,10 @@ echo "Setup complete" >&2
 cat << EOF
 {
   "command": "uv",
-  "args": ["run", "main"],
+  "args": ["run", "brainlift-mcp"],
   "env": {
-    "OAUTH_CLIENT_SECRET": "./credentials/client-secrets.json",
-    "OAUTH_CLIENT_TOKEN": "./.gcp-saved-token.json"
+    "OAUTH_CLIENT_SECRET_PATH": "./credentials/client-secrets.json",
+    "OAUTH_CLIENT_TOKEN_PATH": "./.gcp-saved-token.json",
     "BRAINLIFT_API_URL": "https://brainlift.space/functions/api/v1"
   },
   "cwd": "$(pwd)"

@@ -13,3 +13,8 @@ wheels/
 .env
 token.json
 log.txt
+
+credentials/
+.mypy_cache/
+.ruff_cache/
+.gcp-saved-token.json
