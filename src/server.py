@@ -71,6 +71,7 @@ def get_brainlift_info(brainlift_id: str) -> dict:
 
         brainlift_data = client.get_brainlift(brainlift_id)
         nodes = client.get_nodes(brainlift_id)
+        print(f"Received {len(nodes)} nodes, first node: {nodes[0]}")
 
         # Format the response according to the specification
         return {
@@ -78,7 +79,10 @@ def get_brainlift_info(brainlift_id: str) -> dict:
             "dok_distribution": brainlift_data.get("dokDistribution", {}),
             "stats": brainlift_data.get("stats", {}),
             "brainlift_contents": "\n".join(
-                [node.get("content", "") for node in nodes]
+                [
+                    f"DoK Level {node.get('dok_level', 'Not Found')}: {node.get('content', '')}"
+                    for node in nodes
+                ]
             ),
         }
     except Exception as e:
@@ -131,7 +135,7 @@ def get_brainlift_doks(brainlift_id: str, dok_levels: list[int]) -> dict:
             filtered_nodes = [
                 node.get("content", "")
                 for node in nodes
-                if node.get("dokLevel") == level
+                if node.get("dok_level") == level
             ]
             result[dok_key] = filtered_nodes
 

@@ -293,7 +293,6 @@ class BrainliftClient:
                 timeout=30,
             )
             response.raise_for_status()
-            print(f"Received response {response.status_code}, {response.text}")
             return response.json()
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response is not None else None
