@@ -34,6 +34,8 @@ jobs:
           [ -n "${{ secrets.MCP_HIVE_ID }}" ] || { echo "❌ MCP_HIVE_ID missing"; exit 1; }
           [ -n "${{ secrets.OAUTH_CLIENT_ID }}" ] || { echo "❌ OAUTH_CLIENT_ID missing"; exit 1; }
           [ -n "${{ secrets.OAUTH_CLIENT_SECRET }}" ] || { echo "❌ OAUTH_CLIENT_SECRET missing"; exit 1; }
+          [ -n "${{ secrets.SUPABASE_URL }}" ] || { echo "❌ SUPABASE_URL missing"; exit 1; }
+          [ -n "${{ secrets.SUPABASE_ANON_KEY }}" ] || { echo "❌ SUPABASE_ANON_KEY missing"; exit 1; }
           echo "✅ All required secrets are present"
 
       - name: Get version from pyproject.toml
@@ -53,9 +55,7 @@ jobs:
             "version": "${{ steps.get_version.outputs.version }}",
             "tags": ["brainlift", "knowledge-management", "learning", "education"],
             "homePage": "${REPO_URL}",
-            "env": {
-              "BRAINLIFT_API_URL": "${{ secrets.BRAINLIFT_API_URL }}"
-            },
+            "env": {},
             "securitySchemes": [
               {
                 "id": "oauth2",
@@ -81,6 +81,14 @@ jobs:
           JSON
           echo "📋 Custom payload:"; cat custom_payload.json
 
+      - name: Create .env file for MCP server
+        run: |
+          cat > .env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          EOF
+          echo "📋 Created .env with SUPABASE_URL and SUPABASE_ANON_KEY"
+
       - name: Create ZIP for MCP Hive
         run: |
           ZIP_PATH="../brainlift-mcp-server.zip"
@@ -95,7 +103,6 @@ jobs:
             "*.egg-info/*" \
             ".venv/*" \
             ".ruff_cache/*" \
-            ".env"
           echo "📦 Created zip: $ZIP_PATH"; ls -la "$ZIP_PATH"
 
       - name: Publish to MCP Hive
@@ -114,5 +121,3 @@ jobs:
       - name: Done
         run: |
           echo "🎉 Successfully initiated publish to MCP Hive"
-
-

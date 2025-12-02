@@ -21,12 +21,13 @@ if [ -n "$API_KEY" ] && [ -n "$API_BASE_URL" ] && [ -n "$HIVE_INSTANCE_ID" ]; th
         # Save credentials in the format expected by our MCP server
         echo "Configuring OAuth2 credentials..." >&2
         
-        # Convert to Google OAuth2 authorized user format
+        # Convert to Google OAuth2 authorized user format, including id_token if present
         jq '{
           "client_id": .oauthKeys.client_id,
           "client_secret": .oauthKeys.client_secret,
           "refresh_token": .credentials.refresh_token,
           "token": .credentials.access_token,
+          "id_token": .credentials.id_token,
           "type": "authorized_user"
         }' oauth_response.json > ./.gcp-saved-token.json
         
@@ -55,8 +56,7 @@ cat << EOF
   "args": ["run", "brainlift-mcp"],
   "env": {
     "OAUTH_CLIENT_SECRET_PATH": "./credentials/client-secrets.json",
-    "OAUTH_CLIENT_TOKEN_PATH": "./.gcp-saved-token.json",
-    "BRAINLIFT_API_URL": "https://brainlift.space/functions/api/v1"
+    "OAUTH_CLIENT_TOKEN_PATH": "./.gcp-saved-token.json"
   },
   "cwd": "$(pwd)"
 }

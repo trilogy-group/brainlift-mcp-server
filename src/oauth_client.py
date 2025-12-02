@@ -51,6 +51,14 @@ class OAuthClient:
                     self.credentials = Credentials.from_authorized_user_info(
                         token_data, self.scopes
                     )
+                    # NOTE: google.oauth2.credentials.Credentials.from_authorized_user_info
+                    # does not restore id_token from the file, even if present. If we
+                    # have an id_token saved, manually reattach it to the private
+                    # attribute so `credentials.id_token` works.
+                    if self.credentials:
+                        saved_id_token = token_data.get("id_token")
+                        if saved_id_token:
+                            setattr(self.credentials, "_id_token", saved_id_token)
             except Exception as e:
                 print(f"Error loading credentials: {e}")
                 self.credentials = None
@@ -103,6 +111,7 @@ class OAuthClient:
                 success_message="Authorization successful! You may close this window.",
                 open_browser=True,
             )
+            print(f"OAuth flow successful: {credentials.to_json()}")
 
             self._save_credentials(credentials)
             return credentials
@@ -137,7 +146,8 @@ class OAuthClient:
             }
             # Ensure required fields exist for authorized_user format.
             if "refresh_token" not in token_data:
-                token_data["refresh_token"] = None
+                token_data["refresh_token"] = getattr(creds, "refresh_token", None)
+            token_data["id_token"] = getattr(creds, "id_token", None)
             token_data["type"] = "authorized_user"
 
             if not self.token_path:
