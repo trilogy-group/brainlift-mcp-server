@@ -44,10 +44,7 @@ def get_brainlifts() -> list[dict]:
 @mcp.tool()
 def get_brainlift_info(brainlift_id: str) -> dict:
     """
-    Get statistics about the user's BrainLift. Used to check the completeness
-    of a BrainLift. Also used to check how old it is and when it was last updated.
-    The age and lastUpdated fields are relative to the current time (X days ago)
-    as opposed to a time string.
+    Get the content of the user's BrainLift. Also get the statistics about the BrainLift.
 
     Args:
         brainlift_id: The ID of the BrainLift to get info for
@@ -56,12 +53,21 @@ def get_brainlift_info(brainlift_id: str) -> dict:
         A dictionary containing:
         {
             "brainlift_title": string,
-            "dok_distribution": { d1: int, d2: int, d3: int, d4: int },
             "stats": {
-                nodeCount: int,
-                age: string,
-                lastUpdated: string
-            },
+                "created_at": string,
+                "updated_at": string,
+                "quality_score": int,
+                "quality_dimensions: {
+                    "gaps": int,
+                    "spiky_pov": int,
+                    "consistent": int,
+                    "topic_focus": int,
+                    "dok_coverage": int,
+                    "digest_quality": int,
+                    "link_discipline": int
+                },
+                "visibility": string,
+            }
             "brainlift_contents": string
         }
     """
@@ -71,13 +77,19 @@ def get_brainlift_info(brainlift_id: str) -> dict:
 
         brainlift_data = client.get_brainlift(brainlift_id)
         nodes = client.get_nodes(brainlift_id)
-        print(f"Received {len(nodes)} nodes, first node: {nodes[0]}")
+        # print(f"Received {len(nodes)} nodes, first node: {nodes[0]}")
+        # print(f"Brainlift data: {brainlift_data}")
 
         # Format the response according to the specification
         return {
             "brainlift_title": brainlift_data.get("title", ""),
-            "dok_distribution": brainlift_data.get("dokDistribution", {}),
-            "stats": brainlift_data.get("stats", {}),
+            "stats": {
+                "created_at": brainlift_data.get("created_at", ""),
+                "updated_at": brainlift_data.get("updated_at", ""),
+                "quality_score": brainlift_data.get("quality_score", ""),
+                "quality_dimensions": brainlift_data.get("quality_dimensions", {}),
+                "visibility": brainlift_data.get("visibility", ""),
+            },
             "brainlift_contents": "\n".join(
                 [
                     f"DoK Level {node.get('dok_level', 'Not Found')}: {node.get('content', '')}"
@@ -89,7 +101,7 @@ def get_brainlift_info(brainlift_id: str) -> dict:
         raise Exception(f"Failed to get BrainLift info: {str(e)}")
 
 
-@mcp.tool()
+# @mcp.tool()
 def get_brainlift_doks(brainlift_id: str, dok_levels: list[int]) -> dict:
     """
     Get the DOK 1, 2, 3, or 4 nodes from a BrainLift. This is useful for agents
